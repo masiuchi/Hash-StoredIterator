@@ -1,0 +1,101 @@
+NAME
+    Hash::StoredIterator - Functions for accessing a hashes internal
+    iterator.
+
+DESCRIPTION
+    In perl all hashes have an internal iterator. This iterator is used by
+    the "each()" function, as well as by "keys()" and "values()". Because
+    these all share use of the same iterator, they tend to interact badly
+    with eachother when nested.
+
+    Hash::StoredIterator gives you access to get, set, and init the iterator
+    inside a hash. This allows you to store the current iterator, use
+    each/keys/values/etc, and then restore the iterator, this helps you to
+    ensure you do not interact badly with other users of the iterator.
+
+    Along with low-level get/set/init functions, there are also 2 variations
+    of "each()" which let you act upon each key/value pair in a safer way
+    than vanilla "each()"
+
+    This module can also export new implementations of "keys()" and
+    "values()" which stash and restore the iterator so that they are safe to
+    use within "each()".
+
+EXPORTS
+    my ( $key, $val ) = eich( %hash, $iterator )
+        This is just like "each()", except that you need to give it a scalar
+        in which the iterator will be stored. If the $iterator value is
+        undefined, the iterator will be initialized, so on the first call it
+        should be undef.
+
+        Never set the value of $iterator directly! The behavior of doing so
+        is undefined, it might work, it might not, it might do bad things.
+
+        Note: See caveats.
+
+    eech( \&callback, %hash )
+    eech { ... } %hash
+        Iterate each key/pair calling "$callback-"( $key, $value )> for each
+        set. In addition $a and $_ are set to the key, and $b is set to the
+        value. This is done primarily for convenience of matching against
+        the key, and short callbacks that will be cluttered by parsing @_
+        noise.
+
+        Note: See caveats.
+
+    my @keys = hkeys( %hash )
+        Same as the builtin "keys()", except it stores and restores the
+        iterator.
+
+        Note: Overriding the builtin keys(), even locally, causes stange
+        interactions with other builtins. When trying to export hkeys as
+        keys, a call to "sort keys %hash" would cause undef to be passed
+        into keys() as the first and only argument.
+
+    my @values = hvalues( %hash )
+        Same as the builtin "values()", except it stores and restores the
+        iterator.
+
+        Note: Overriding the builtin values(), even locally, causes stange
+        interactions with other builtins. When trying to export hvalues as
+        values, a call to "sort values %hash" would cause undef to be passed
+        into values() as the first and only argument.
+
+    my $i = hash_get_iterator( \%hash )
+        Get the current iterator value.
+
+    hash_set_iterator( \%hash, $i )
+        Set the iterator value.
+
+        Note: Only ever set this to the value retrieved by
+        "hash_get_iterator()", setting the iterator in any other way is
+        untested, and may result in undefined behavior.
+
+    hash_init_iterator( \%hash )
+        Initialize or reset the hash iterator.
+
+CAVEATS
+    Modification of hash during iteration
+        Just like with the builtin "each()" modifying the hash between calls
+        to each is not recommended and can result in undefined behavior. The
+        builtin "each()" does allow for deleting the iterations key, however
+        that is NOT supported by this library.
+
+    sort() edge case
+        For some reason "[sort hkeys %hash]" and "[sort hkeys(%hash)]" both
+        result in a list that has all the keys and values (and strangly not
+        in sorted order). However "[sort(hkeys(%hash))]" works fine.
+
+AUTHORS
+    Chad Granum exodist7@gmail.com
+
+COPYRIGHT
+    Copyright (C) 2013 Chad Granum
+
+    Hash-StoredIterator is free software; Standard perl licence.
+
+    Hash-StoredIterator is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the license for
+    more details.
+
