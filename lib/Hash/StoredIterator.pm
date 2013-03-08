@@ -18,7 +18,7 @@ our @EXPORT_OK = qw{
     hvalues
 };
 
-our $VERSION = '0.001';
+our $VERSION = '0.002';
 
 require XSLoader;
 XSLoader::load( 'Hash::StoredIterator', $VERSION );
