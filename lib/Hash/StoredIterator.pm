@@ -18,7 +18,7 @@ our @EXPORT_OK = qw{
     hvalues
 };
 
-our $VERSION = '0.002';
+our $VERSION = '0.003';
 
 require XSLoader;
 XSLoader::load( 'Hash::StoredIterator', $VERSION );
@@ -136,6 +136,67 @@ vanilla C<each()>
 This module can also export new implementations of C<keys()> and C<values()>
 which stash and restore the iterator so that they are safe to use within
 C<each()>.
+
+=head1 SYNOPSIS
+
+    use Hash::StoredIterator qw{
+        eich
+        eech
+        hkeys
+        hvalues
+        hash_get_iterator
+        hash_set_iterator
+        hash_init_iterator
+    };
+
+    my %hash = map { $_ => uc( $_ )} 'a' .. 'z';
+
+    my @keys = hkeys %hash;
+    my @values = hvalues %hash;
+
+Each section below is functionally identical.
+
+    my $iterator;
+    while( my ( $k, $v ) = eich( %hash, $iterator )) {
+        print "$k: $value\n";
+    }
+
+    eech { print "$a: $b\n" } %hash;
+
+    eech { print "$_: $b\n" } %hash;
+
+    eech {
+        my ( $key, $val ) = @_;
+        print "$key: $val\n";
+    } %hash;
+
+It is safe to nest calls to C<eich()>, C<eech()>, C<hkeys()>, and C<hvalues()>
+
+    eech {
+        my ( $key, $val ) = @_;
+        print "$key: $val\n";
+        my @keys = hkeys( %hash );
+    } %hash;
+
+C<eech()> and C<eich()> will also properly handle calls to C<CORE::each>,
+C<CORE::keys>, and C<Core::values> nested within them.
+
+    eech {
+        my ( $key, $val ) = @_;
+        print "$key: $val\n";
+
+        # No infinite loop!
+        my @keys = keys %hash;
+    } %hash;
+
+Low Level:
+
+    hash_init_iterator( \%hash );
+    my $iter = hash_get_iterator( \%hash );
+    # NOTE: Never manually specify an $iter value, ALWAYS use a value from
+    # hash_get_iterator.
+    hash_set_iterator( \%hash, $iter );
+
 
 =head1 EXPORTS
 
