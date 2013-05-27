@@ -206,3 +206,4 @@ tests strange_edge_case => (
     },
 );
 
+done_testing;
