@@ -30,7 +30,7 @@ typedef struct {
 MODULE = Hash::StoredIterator PACKAGE = Hash::StoredIterator
 
 TYPEMAP: <<EOT
-hsi * T_PV
+hsi * T_PTR
 EOT
 
 hsi *hash_get_iterator( hv )
