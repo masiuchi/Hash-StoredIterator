@@ -12,7 +12,7 @@ my $build = Module::Build->new(
         'perl' => '5.10.0',
     },
     build_requires => {
-        'Fennec' => '1.012',
+        'Fennec' => '2.004',
         'ExtUtils::ParseXS' => '3.15',
     },
 );
