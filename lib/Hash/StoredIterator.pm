@@ -5,12 +5,14 @@ use strict;
 use warnings;
 
 use base 'Exporter';
-use Carp qw/croak/;
+use Carp qw/croak carp/;
 use B;
 
 our @EXPORT_OK = qw{
+    hmap
     eich
     eech
+    iterator
     hash_get_iterator
     hash_set_iterator
     hash_init_iterator
@@ -18,12 +20,13 @@ our @EXPORT_OK = qw{
     hvalues
 };
 
-our $VERSION = '0.005';
+our $VERSION = '0.006';
 
 require XSLoader;
 XSLoader::load( 'Hash::StoredIterator', $VERSION );
 
 sub eich(\%\$) {
+    carp "eich is deprecated, you should use iterator() instead";
     my ( $hash, $i_ref ) = @_;
 
     my $old_it = hash_get_iterator($hash);
@@ -49,11 +52,51 @@ sub eich(\%\$) {
     hash_set_iterator( $hash, $old_it );
     die $@ unless $success;
 
-    return unless defined $key;
+    unless ( defined $key ) {
+        $$i_ref = undef;
+        return;
+    }
+
     return ( $key, $val );
 }
 
-sub eech(&\%) {
+sub iterator(\%) {
+    my ($hash) = @_;
+    my $i = undef;
+
+    return sub {
+        my $old_it = hash_get_iterator($hash);
+
+        my ( $key, $val );
+
+        my $success = eval {
+            if ( !defined $i ) {
+                hash_init_iterator( $hash );
+            }
+            else {
+                hash_set_iterator( $hash, $i );
+            }
+
+            ( $key, $val ) = each( %$hash );
+
+            $i = hash_get_iterator($hash);
+
+            1;
+        };
+
+        hash_set_iterator( $hash, $old_it );
+        die $@ unless $success;
+
+        unless ( defined $key ) {
+            $i = undef;
+            return;
+        }
+
+        return ( $key, $val );
+    };
+}
+
+sub hmap(&\%) {
     my ( $code, $hash ) = @_;
 
     my $old_it = hash_get_iterator($hash);
@@ -79,6 +122,11 @@ sub eech(&\%) {
     hash_set_iterator( $hash, $old_it );
     die $@ unless $success;
     return;
+}
+
+sub eech(&\%) {
+    carp "eech is deprecated, use hmap instead";
+    goto &hmap;
 }
 
 sub hkeys(\%) {
@@ -140,10 +188,10 @@ C<each()>.
 =head1 SYNOPSIS
 
     use Hash::StoredIterator qw{
-        eich
-        eech
+        hmap
         hkeys
         hvalues
+        iterator
         hash_get_iterator
         hash_set_iterator
         hash_init_iterator
@@ -156,32 +204,32 @@ C<each()>.
 
 Each section below is functionally identical.
 
-    my $iterator;
-    while( my ( $k, $v ) = eich( %hash, $iterator )) {
+    my $iterator = iterator %hash;
+    while( my ( $k, $v ) = $i->() ) {
         print "$k: $value\n";
     }
 
-    eech { print "$a: $b\n" } %hash;
+    hmap { print "$a: $b\n" } %hash;
 
-    eech { print "$_: $b\n" } %hash;
+    hamp { print "$_: $b\n" } %hash;
 
-    eech {
+    hmap {
         my ( $key, $val ) = @_;
         print "$key: $val\n";
     } %hash;
 
-It is safe to nest calls to C<eich()>, C<eech()>, C<hkeys()>, and C<hvalues()>
+It is safe to nest calls to C<hmap()>, C<iterator()>, C<hkeys()>, and C<hvalues()>
 
-    eech {
+    hmap {
         my ( $key, $val ) = @_;
         print "$key: $val\n";
         my @keys = hkeys( %hash );
     } %hash;
 
-C<eech()> and C<eich()> will also properly handle calls to C<CORE::each>,
+C<hmap()> and C<iterator()> will also properly handle calls to C<CORE::each>,
 C<CORE::keys>, and C<Core::values> nested within them.
 
-    eech {
+    hmap {
         my ( $key, $val ) = @_;
         print "$key: $val\n";
 
@@ -202,26 +250,26 @@ Low Level:
 
 =over 4
 
-=item my ( $key, $val ) = eich( %hash, $iterator )
+=item my $i = iterator %hash
 
-This is just like C<each()>, except that you need to give it a scalar in which
-the iterator will be stored. If the $iterator value is undefined, the iterator
-will be initialized, so on the first call it should be undef.
+Get an iterator that can be used to retrieve key/value pairs.
 
-B<Never set the value of $iterator directly!> The behavior of doing so is
-undefined, it might work, it might not, it might do bad things.
+    my $i = iterator %hash;
+    while( my ($k, $v) = $i->() ) {
+        ...
+    }
 
-B<Note:> See caveats.
+The iterator is a coderef, so you call it like this: C<$i->()>. You can also
+use the sub anywhere you would use any other coderef.
 
-=item eech( \&callback, %hash )
+=item hmap( \&callback, %hash )
 
-=item eech { ... } %hash
+=item hmap { ... } %hash
 
 Iterate each key/pair calling C<$callback->( $key, $value )> for each set. In
 addition C<$a> and C<$_> are set to the key, and C<$b> is set to the value.
 This is done primarily for convenience of matching against the key, and short
 callbacks that will be cluttered by parsing C<@_> noise.
-
 
 B<Note:> See caveats.
 
@@ -258,6 +306,23 @@ behavior.
 =item hash_init_iterator( \%hash )
 
 Initialize or reset the hash iterator.
+
+=back
+
+=head1 DEPRECATED
+
+These have been deprecated because they were terrible names. eich was also
+deprecated because it was unnatural to use.
+
+=over 4
+
+=item eich
+
+use iterator() instead
+
+=item eech
+
+use hmap instead
 
 =back
 

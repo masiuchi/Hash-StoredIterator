@@ -17,6 +17,8 @@ BEGIN {
         hash_get_iterator
         hash_set_iterator
         hash_init_iterator
+        hmap
+        iterator
     };
 
     use_ok( $CLASS, @import );
@@ -93,12 +95,12 @@ describe eaches => sub {
         );
     };
 
-    tests nested_eech => sub {
+    tests nested_hmap => sub {
         my @inner;
         my @outer;
 
         #<<< no-tidy  Perltidy hates this...
-        eech {
+        hmap {
             my ( $k, $v ) = @_;
             ok( $k, "Got key" );
             ok( $v, "Got val" );
@@ -109,7 +111,7 @@ describe eaches => sub {
             push @outer => [$k, $v];
             $interference->();
 
-            eech {
+            hmap {
                 my ( $k2, $v2 ) = @_;
 
                 is( $k2, $_, '$_ is set to key' );
@@ -173,7 +175,7 @@ tests death => sub {
 
     #<<< no-tidy  Perltidy hates this...
     eval {
-        eech {
+        hmap {
             my ( $k, $v ) = @_;
             die "foo" if $counter++ > 3;
         } %hash;
@@ -205,5 +207,30 @@ tests strange_edge_case => (
         );
     },
 );
+
+tests iterator => sub {
+    my $i = iterator %hash;
+
+    my $nh = {
+        $i->(),
+        $i->(),
+        $i->(),
+    };
+
+    is_deeply(
+        $nh,
+        \%hash,
+        "Copied hash via iterator"
+    );
+
+    is_deeply(
+        [$i->()],
+        [],
+        "End, no more"
+    );
+
+    my ($k, $v) = $i->();
+    ok( $k && $v, "Got a key and value, iterator was reset" );
+};
 
 done_testing;

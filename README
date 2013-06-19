@@ -23,10 +23,10 @@ DESCRIPTION
 
 SYNOPSIS
         use Hash::StoredIterator qw{
-            eich
-            eech
+            hmap
             hkeys
             hvalues
+            iterator
             hash_get_iterator
             hash_set_iterator
             hash_init_iterator
@@ -39,33 +39,33 @@ SYNOPSIS
 
     Each section below is functionally identical.
 
-        my $iterator;
-        while( my ( $k, $v ) = eich( %hash, $iterator )) {
+        my $iterator = iterator %hash;
+        while( my ( $k, $v ) = $i->() ) {
             print "$k: $value\n";
         }
 
-        eech { print "$a: $b\n" } %hash;
+        hmap { print "$a: $b\n" } %hash;
 
-        eech { print "$_: $b\n" } %hash;
+        hamp { print "$_: $b\n" } %hash;
 
-        eech {
+        hmap {
             my ( $key, $val ) = @_;
             print "$key: $val\n";
         } %hash;
 
-    It is safe to nest calls to "eich()", "eech()", "hkeys()", and
+    It is safe to nest calls to "hmap()", "iterator()", "hkeys()", and
     "hvalues()"
 
-        eech {
+        hmap {
             my ( $key, $val ) = @_;
             print "$key: $val\n";
             my @keys = hkeys( %hash );
         } %hash;
 
-    "eech()" and "eich()" will also properly handle calls to "CORE::each",
-    "CORE::keys", and "Core::values" nested within them.
+    "hmap()" and "iterator()" will also properly handle calls to
+    "CORE::each", "CORE::keys", and "Core::values" nested within them.
 
-        eech {
+        hmap {
             my ( $key, $val ) = @_;
             print "$key: $val\n";
 
@@ -82,19 +82,19 @@ SYNOPSIS
         hash_set_iterator( \%hash, $iter );
 
 EXPORTS
-    my ( $key, $val ) = eich( %hash, $iterator )
-        This is just like "each()", except that you need to give it a scalar
-        in which the iterator will be stored. If the $iterator value is
-        undefined, the iterator will be initialized, so on the first call it
-        should be undef.
+    my $i = iterator %hash
+        Get an iterator that can be used to retrieve key/value pairs.
 
-        Never set the value of $iterator directly! The behavior of doing so
-        is undefined, it might work, it might not, it might do bad things.
+            my $i = iterator %hash;
+            while( my ($k, $v) = $i->() ) {
+                ...
+            }
 
-        Note: See caveats.
+        The iterator is a coderef, so you call it like this: "$i-"()>. You
+        can also use the sub anywhere you would use any other coderef.
 
-    eech( \&callback, %hash )
-    eech { ... } %hash
+    hmap( \&callback, %hash )
+    hmap { ... } %hash
         Iterate each key/pair calling "$callback-"( $key, $value )> for each
         set. In addition $a and $_ are set to the key, and $b is set to the
         value. This is done primarily for convenience of matching against
@@ -133,6 +133,16 @@ EXPORTS
 
     hash_init_iterator( \%hash )
         Initialize or reset the hash iterator.
+
+DEPRECATED
+    These have been deprecated because they were terrible names. eich was
+    also deprecated because it was unnatural to use.
+
+    eich
+        use iterator() instead
+
+    eech
+        use hmap instead
 
 CAVEATS
     Modification of hash during iteration
