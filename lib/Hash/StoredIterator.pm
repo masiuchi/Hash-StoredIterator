@@ -20,7 +20,7 @@ our @EXPORT_OK = qw{
     hvalues
 };
 
-our $VERSION = '0.006';
+our $VERSION = '0.007';
 
 require XSLoader;
 XSLoader::load( 'Hash::StoredIterator', $VERSION );
@@ -103,9 +103,9 @@ sub hmap(&\%) {
     hash_init_iterator($hash);
 
     my $success = eval {
-        my $iter;
+        my $iter = iterator %$hash;
 
-        while ( my ( $k, $v ) = eich( %$hash, $iter ) ) {
+        while ( my ( $k, $v ) = $iter->() ) {
             local $_ = $k;
             # Can't use caller(), subref might be from a different package than
             # eech is called from.
