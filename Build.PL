@@ -15,6 +15,11 @@ my $build = Module::Build->new(
         'Fennec' => '2.004',
         'ExtUtils::ParseXS' => '3.15',
     },
+    meta_merge => {
+        resources => {
+            repository => 'https://github.com/exodist/Hash-StoredIterator',
+        },
+    },
 );
 
 $build->create_build_script;
