@@ -169,8 +169,8 @@ Hash::StoredIterator - Functions for accessing a hashes internal iterator.
 
 In perl all hashes have an internal iterator. This iterator is used by the
 C<each()> function, as well as by C<keys()> and C<values()>. Because these all
-share use of the same iterator, they tend to interact badly with eachother when
-nested.
+share use of the same iterator, they tend to interact badly with each other
+when nested.
 
 Hash::StoredIterator gives you access to get, set, and init the iterator inside
 a hash. This allows you to store the current iterator, use
@@ -277,7 +277,7 @@ B<Note:> See caveats.
 
 Same as the builtin C<keys()>, except it stores and restores the iterator.
 
-B<Note:> Overriding the builtin keys(), even locally, causes stange
+B<Note:> Overriding the builtin keys(), even locally, causes strange
 interactions with other builtins. When trying to export hkeys as keys, a call
 to C<sort keys %hash> would cause undef to be passed into keys() as the first
 and only argument.
@@ -286,7 +286,7 @@ and only argument.
 
 Same as the builtin C<values()>, except it stores and restores the iterator.
 
-B<Note:> Overriding the builtin values(), even locally, causes stange
+B<Note:> Overriding the builtin values(), even locally, causes strange
 interactions with other builtins. When trying to export hvalues as values, a
 call to C<sort values %hash> would cause undef to be passed into values() as
 the first and only argument.
@@ -340,7 +340,7 @@ this library.
 =item sort() edge case
 
 For some reason C<[sort hkeys %hash]> and C<[sort hkeys(%hash)]> both result in
-a list that has all the keys and values (and strangly not in sorted order).
+a list that has all the keys and values (and strangely not in sorted order).
 However C<[sort(hkeys(%hash))]> works fine.
 
 =back
