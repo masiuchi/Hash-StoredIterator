@@ -12,8 +12,11 @@ my $build = Module::Build->new(
         'perl' => '5.10.0',
     },
     build_requires => {
-        'Fennec' => '2.004',
         'ExtUtils::ParseXS' => '3.15',
+    },
+    test_requires  => {
+        'Test2::Bundle::Extended'       => 0,
+        'Test2::Tools::Spec'            => 0,
     },
     meta_merge => {
         resources => {

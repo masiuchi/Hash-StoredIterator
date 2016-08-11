@@ -20,6 +20,10 @@ our @EXPORT_OK = qw{
     hvalues
 };
 
+our %EXPORT_TAGS = (
+    'all'      => \@EXPORT_OK
+);
+
 our $VERSION = '0.007';
 
 require XSLoader;

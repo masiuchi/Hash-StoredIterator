@@ -1,29 +1,7 @@
-package Test::Hash::StoredIterator;
-use strict;
-use warnings;
+use Test2::Bundle::Extended -target => 'Hash::StoredIterator';
+use Test2::Tools::Spec;
 
-use Fennec;
-use ExtUtils::testlib;
-
-our $CLASS;
-
-BEGIN {
-    $CLASS = 'Hash::StoredIterator';
-    my @import = qw{
-        eich
-        eech
-        hkeys
-        hvalues
-        hash_get_iterator
-        hash_set_iterator
-        hash_init_iterator
-        hmap
-        iterator
-    };
-
-    use_ok( $CLASS, @import );
-    can_ok( $CLASS, @import );
-}
+use Hash::StoredIterator ':all';
 
 my %hash = ( a => 1, b => 2, c => 3 );
 
@@ -82,13 +60,13 @@ describe eaches => sub {
             }
         }
 
-        is_deeply(
+        is(
             [sort { $a->[0] cmp $b->[0] } @outer],
             \@want_outer,
             "Out loop got all keys"
         );
 
-        is_deeply(
+        is(
             [sort { $a->[0] cmp $b->[0] } @inner],
             \@want_inner,
             "Inner loop got all keys multiple times"
@@ -129,13 +107,13 @@ describe eaches => sub {
         } %hash;
         #>>>
 
-        is_deeply(
+        is(
             [sort { $a->[0] cmp $b->[0] } @outer],
             \@want_outer,
             "Outer loop got all keys"
         );
 
-        is_deeply(
+        is(
             [sort { $a->[0] cmp $b->[0] } @inner],
             \@want_inner,
             "Inner loop got all keys multiple times"
@@ -152,13 +130,13 @@ tests get_from_eich => sub {
 };
 
 tests keys_and_vals => sub {
-    is_deeply(
+    is(
         [sort( hkeys(%hash) )],
         [sort keys %hash],
         "Same list from both keys and hkeys"
     );
 
-    is_deeply(
+    is(
         [sort( hvalues(%hash) )],
         [sort values %hash],
         "Same list from both values and hvalues"
@@ -191,22 +169,19 @@ tests death => sub {
     is( $key,     $skey, "Iterator was restored" );
 };
 
-tests strange_edge_case => (
-    todo => "Not sure what the problem is here...",
-    sub {
-        is_deeply(
-            [sort hkeys %hash],
-            [sort keys %hash],
-            "Same list from both keys and hkeys"
-        );
+tests strange_edge_case => { todo => "Not sure what the problem is here..." } => sub {
+    is(
+        [sort hkeys %hash],
+        [sort keys %hash],
+        "Same list from both keys and hkeys"
+    );
 
-        is_deeply(
-            [sort hkeys(%hash)],
-            [sort keys %hash],
-            "Same list from both keys and hkeys"
-        );
-    },
-);
+    is(
+        [sort hkeys(%hash)],
+        [sort keys %hash],
+        "Same list from both keys and hkeys"
+    );
+};
 
 tests iterator => sub {
     my $i = iterator %hash;
@@ -217,13 +192,13 @@ tests iterator => sub {
         $i->(),
     };
 
-    is_deeply(
+    is(
         $nh,
         \%hash,
         "Copied hash via iterator"
     );
 
-    is_deeply(
+    is(
         [$i->()],
         [],
         "End, no more"
