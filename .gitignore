@@ -2,6 +2,11 @@ Hash-StoredIterator-*
 .build
 *.orig
 
+# Backup and temp files
+*.bak
+*~
+.#*
+
 # Ignore files created by build/make
 Build
 _build
