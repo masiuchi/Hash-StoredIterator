@@ -7,7 +7,8 @@ my $build = Module::Build->new(
     module_name => 'Hash::StoredIterator',
     license     => 'perl',
     dist_author => 'Chad Granum <exodist7@gmail.com>',
-    create_readme => 1,
+    create_readme  => 1,
+    create_license => 1,
     requires => {
         'perl' => '5.10.0',
     },
