@@ -47,18 +47,20 @@ describe eaches => sub {
         my @inner;
         my @outer;
 
-        my $o_it;
-        while ( my ( $k, $v ) = eich( %hash, $o_it ) ) {
-            push @outer => [$k, $v];
-            $interference->();
-
-            my $i_it;
-            while ( my ( $k, $v ) = eich( %hash, $i_it ) ) {
-                push @inner => [$k, $v];
-
+        warnings {
+            my $o_it;
+            while ( my ( $k, $v ) = eich( %hash, $o_it ) ) {
+                push @outer => [$k, $v];
                 $interference->();
+
+                my $i_it;
+                while ( my ( $k, $v ) = eich( %hash, $i_it ) ) {
+                    push @inner => [$k, $v];
+
+                    $interference->();
+                }
             }
-        }
+        };
 
         is(
             [sort { $a->[0] cmp $b->[0] } @outer],
@@ -124,9 +126,12 @@ describe eaches => sub {
 tests get_from_eich => sub {
     my $i;
     my $h = {%hash};
-    my ( $k, $v ) = eich( %$h, $i );
-    ok( $k, "Got a key" );
-    ok( $v, "got a value" );
+
+    warnings {
+        my ( $k, $v ) = eich( %$h, $i );
+        ok( $k, "Got a key" );
+        ok( $v, "got a value" );
+    };
 };
 
 tests keys_and_vals => sub {
