@@ -24,7 +24,7 @@ our %EXPORT_TAGS = (
     'all'      => \@EXPORT_OK
 );
 
-our $VERSION = '0.007';
+our $VERSION = '0.008';
 
 require XSLoader;
 XSLoader::load( 'Hash::StoredIterator', $VERSION );
