@@ -9,9 +9,9 @@ my $build = Module::Build->new(
     dist_author => 'Chad Granum <exodist7@gmail.com>',
     create_readme  => 1,
     create_license => 1,
-    requires => {
-        'perl' => '5.10.0',
-    },
+    # requires => {
+    #     'perl' => '5.10.0',
+    # },
     build_requires => {
         'ExtUtils::ParseXS' => '3.15',
     },
