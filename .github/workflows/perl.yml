@@ -27,7 +27,7 @@ jobs:
 
       - name: Run tests with latest Perl
         run: |
-          docker run -v `pwd`:/workdir -w /workdir perl:latest bash -c "cpanm Module::Build Test2::Bundle::Extended Test2::Tools::Spec && ./Build && ./Build test && ./Build install"
+          docker run -v `pwd`:/workdir -w /workdir perl:latest bash -c "cpanm Module::Build Test2::Bundle::Extended Test2::Tools::Spec && perl Build.PL && ./Build && ./Build test && ./Build install"
 
       # - name: Run tests with Perl 5.8.9
       #   run: |
