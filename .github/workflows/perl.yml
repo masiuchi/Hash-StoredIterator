@@ -29,6 +29,6 @@ jobs:
         run: |
           docker run -v `pwd`:/workdir -w /workdir perl:latest bash -c "cpanm Module::Build Test2::Bundle::Extended Test2::Tools::Spec && perl Build.PL && ./Build && ./Build test && ./Build install"
 
-      # - name: Run tests with Perl 5.8.9
-      #   run: |
-      #     docker run -v `pwd`:/root/workdir -w /root/workdir perl:5.8.9 bash -c "cpanm https://github.com/masiuchi/Mixin-Linewise/archive/refs/tags/0.110_01.tar.gz && cpanm Config::INI::Reader && prove -Ilib t"
+      - name: Run tests with Perl 5.8.9
+        run: |
+          docker run -v `pwd`:/workdir -w /workdir perl:5.8.9 bash -c "cpanm Module::Build Test2::Bundle::Extended Test2::Tools::Spec && perl Build.PL && ./Build && ./Build test && ./Build install"
