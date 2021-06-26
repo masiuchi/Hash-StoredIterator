@@ -31,4 +31,4 @@ jobs:
 
       - name: Run tests with Perl 5.8.9
         run: |
-          docker run -v `pwd`:/workdir -w /workdir perl:5.8.9 bash -c "cpanm Module::Build Test2::Bundle::Extended Test2::Tools::Spec && perl Build.PL && ./Build && ./Build test && ./Build install"
+          docker run -v `pwd`:/workdir -w /workdir perl:5.8.9-slim-buster bash -c "apt update && apt install gcc && cpanm Module::Build Test2::Bundle::Extended Test2::Tools::Spec && perl Build.PL && ./Build && ./Build test && ./Build install"
