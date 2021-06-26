@@ -37,8 +37,8 @@ hsi *hash_get_iterator( hv )
         HV  *hv
     CODE:
         Newx( RETVAL, 1, hsi );
-        RETVAL->riter = HvRITER(hv);
-        RETVAL->eiter = HvEITER(hv);
+        RETVAL->riter = HvRITER_get(hv);
+        RETVAL->eiter = HvEITER_get(hv);
     OUTPUT:
         RETVAL
 
@@ -46,8 +46,8 @@ void hash_set_iterator( hv, itr )
         HV  *hv
         hsi *itr
     CODE:
-        HvRITER(hv) = itr->riter;
-        HvEITER(hv) = itr->eiter;
+        HvRITER_set(hv, itr->riter);
+        HvEITER_set(hv, itr->eiter);
 
 void hash_init_iterator( hv )
         HV *hv
